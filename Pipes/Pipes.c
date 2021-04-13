@@ -10,7 +10,7 @@ void PrintInUpper(const char* string){
     char Char;
     int i = 0;
 
-    while (string[i] != '\0') {
+    while (string[i] != NULL) {
         Char = string[i];
         putchar(toupper(Char));
         i++;
@@ -32,10 +32,13 @@ int main(){
     Child_1 = fork();
 
     if (Child_1 == 0){
+        close(fileDescriptor[0]);
         write(fileDescriptor[1], OutputText, LEN);
         return 0;
     }
     else if (Child_1 == -1) {
+        close(fileDescriptor[0]);
+        close(fileDescriptor[1]);
         perror("fork failed ");
         return -1;
     }
@@ -44,10 +47,13 @@ int main(){
 
     if (Child_2 == -1){
         perror("fork failed ");
+        close(fileDescriptor[0]);
+        close(fileDescriptor[1]);
         return -1;
     }
 
     if (Child_1 > 0 && Child_2 == 0){
+        close(fileDescriptor[1]);
         read(fileDescriptor[0], InputText, LEN);
         PrintInUpper(InputText);
         return 0;
@@ -61,5 +67,7 @@ int main(){
     printf("Child 1 exit status: %d\n", WEXITSTATUS(Status_1));
     printf("Child 2 exit status: %d\n", WEXITSTATUS(Status_2));
 
+    close(fileDescriptor[0]);
+    close(fileDescriptor[1]);
     return 0;
 }
