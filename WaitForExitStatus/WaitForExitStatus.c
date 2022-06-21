@@ -31,6 +31,15 @@ int main (int argc, char **argv){
         return 1;
     }
 
-    printf("exit status: %d\n", WEXITSTATUS(status));
-    return WEXITSTATUS(status);
+    if (WIFEXITED(status) != 0) {
+        int exit_status = WEXITSTATUS(status);
+        printf("Exit status: %d\n", exit_status);
+    }
+
+    if (WIFSIGNALED(status) != 0) {
+        int sig_num = WTERMSIG(status);
+        printf("Signal %d caused ending program\n", sig_num);
+    }
+
+    return 0;
 }
