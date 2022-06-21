@@ -7,8 +7,12 @@
 
 int main(int argc, char *argv[])
 {
+    if (argc < 2) {
+        fprintf(stderr, "specify file name\n");
+        return 0;
+    }
     struct flock lock;
-    char command[FILENAME_MAX];
+    char command[strlen(argv[1]) + 5]; // length of "nano %s"
 
     int fileDescriptor;
 
@@ -17,7 +21,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    lock.l_type = F_RDLCK;
+    lock.l_type = F_WRLCK;
     lock.l_whence = SEEK_SET;
     lock.l_start = 0;
     lock.l_len = 0; // until end of file because file may grow in runtime
@@ -31,7 +35,7 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-    sprintf(command, "nano %s\n", argv[1]);
+    sprintf(command, "nano %s", argv[1]);
     system(command);
 
     lock.l_type = F_UNLCK;
