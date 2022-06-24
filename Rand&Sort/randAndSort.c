@@ -6,7 +6,7 @@
 int main() {
 	srand(time(NULL));
 	FILE * fd[2];
-	if(p2open("sort", fd) == -1){
+	if(p2open("sort -n", fd) == -1){
 		perror("p2open failed");
 		return -1;
 	} 
@@ -22,7 +22,7 @@ int main() {
 		}
 		printf("\n");
 	}
-	if (pclose(fd[0]) == -1){
+	if (fclose(fd[0]) != 0){
 		perror("pclose failed");
 		return -1;
 	}
@@ -32,7 +32,6 @@ int main() {
 	printf("Sorted array:\n");
 	for(int i = 0; i < 10; i++){
 		for(int j = 0; j < 10; j++){
-			currentNum = rand() % 100;
 			fscanf(fd[1], "%d", &currentNum);
 			printf("%3d ", currentNum);
 		}

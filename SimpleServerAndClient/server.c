@@ -28,12 +28,6 @@ int main(){
         return -1;
     }
 
-    /*На всякий случай вызываем функцию unlink,
-     * чтобы гарантировать отсутствие сгенерированного
-     * имени в файловой системе. */
-
-    unlink(socketPath);
-
     /*присвоить имя дескриптору */
     if (bind(sock, (struct sockaddr *)&socketAddr, sizeof(socketAddr)) < 0) {
         perror("bind");
@@ -44,16 +38,14 @@ int main(){
     /* сообщить ядру, что процесс является сервером */
     if (listen(sock, 1) != 0){
         perror("listen");
-        unlink(socketAddr.sun_path);
         close(sock);
         return -1;
     }
-
-    int connectionDesc;
-
-    if ((connectionDesc = accept(sock, NULL, NULL)) == -1){
+    
+    int connectionDesc = accept(sock, NULL, NULL);
+    unlink(socketAddr.sun_path);
+    if (connectionDesc == -1){
         perror("listen");
-        unlink(socketAddr.sun_path);
         close(connectionDesc);
         close(sock);
         return -1;
@@ -71,7 +63,6 @@ int main(){
 
     if (readCount == -1){
         perror("reading error");
-        unlink(socketAddr.sun_path);
         close(connectionDesc);
         close(sock);
         return -1;
@@ -83,6 +74,5 @@ int main(){
     printf("\n");
     close(connectionDesc);
     close(sock);
-    unlink(socketAddr.sun_path);
     return 0;
 }
